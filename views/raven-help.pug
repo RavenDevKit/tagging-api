@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  h1= title
+  h2 #{info}
+  p Set these environment variables to connect to ravend rpc:
+  ul
+    li= "RAVEN_RPC_USER"
+    li= "RAVEN_RPC_PASSWORD"
+    li= "RAVEN_RPC_PROTOCOL (default: http)"
+    li= "RAVEN_RPC_HOST (default: 127.0.0.1)"
+    li= "RAVEN_RPC_PORT (default: 18766)"
