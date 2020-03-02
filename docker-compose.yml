@@ -1,0 +1,66 @@
+version: "3.7"
+services:
+  ravend:
+    image: ravenproject/ravend:latest
+    container_name: ravend
+    volumes:
+      - type: volume
+        source: raven-data
+        target: /var/lib/raven
+    ports:
+      - "18767:18767"
+      - "18766:18766"
+    environment:
+      - SERVER=1
+      - REINDEX=0
+      - DEBUG=0
+      - PRINTTOCONSOLE=1
+      - MAXCONNECTIONS=125
+      - DATADIR=/var/lib/raven
+      - TESTNET=1
+      - PORT=18767
+      - RPCPORT=18766
+      - TXINDEX=1
+      - ASSETINDEX=1
+      - ADDRESSINDEX=1
+      - TIMESTAMPINDEX=1
+      - SPENTINDEX=1
+      - ZMQPUBRAWTX=tcp://0.0.0.0:28332
+      - ZMQPUBHASHBLOCK=tcp://0.0.0.0:28332
+      - RPCBIND=0.0.0.0
+      - RPCALLOWIP=0.0.0.0/0
+      - RPCUSER=raven
+      - RPCPASSWORD=2mbyzg96hzbC0bYWm2pNKs2bJ23jpJId1HIT5cwZP24=
+      - UACOMMENT=raven-tagging
+      - BANTIME=86400
+      - MEMPOOLEXPIRY=72
+      - RPCWORKQUEUE=1100
+      - MAXMEMPOOL=2000
+      - DBCACHE=1000
+      - MAXTXFEE=1.0
+      - DBMAXFILESIZE=64
+    networks:
+      -  not-default-overlay
+  tagging-api:
+    image: ravenproject/tagging-api:latest
+    container_name: tagging-api
+    depends_on:
+        - ravend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - RAVEN_RPC_USER=raven
+      - RAVEN_RPC_PASSWORD=2mbyzg96hzbC0bYWm2pNKs2bJ23jpJId1HIT5cwZP24=
+      - RAVEN_RPC_PROTOCOL=http
+      - RAVEN_RPC_HOST=ravend
+      - RAVEN_RPC_PORT=18766
+      - DEBUG=tagger:*
+    networks:
+      -  not-default-overlay
+volumes:
+  raven-data:
+      external: true
+networks:
+    not-default-overlay:
+        attachable: true
